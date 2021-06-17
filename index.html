@@ -3,6 +3,7 @@
 <head>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>HighNet Pay</title>
+  <link rel="stylesheet" href="https://pro.fontawesome.com/releases/v5.10.0/css/all.css" integrity="sha384-AYmEC3Yw5cVb3ZcuHtOA93w35dYTsvhLPVnYs9eStHfGJvOvKxVfELGroGkvsg+p" crossorigin="anonymous"/>
   <link rel="preconnect" href="https://fonts.gstatic.com">
   <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@100&display=swap" rel="stylesheet">
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
@@ -29,12 +30,156 @@
       -moz-box-sizing: border-box; -webkit-box-sizing: border-box; box-sizing: border-box;
      }
 
+     :root {
+       /* Scale setup */
+       --button-height: 27; /* in px */
+       --height-to-scale: 33; /* in px */
+       --scale-ratio: calc(var(--height-to-scale) / var(--button-height));
+
+       /* Slide setup */
+       --button-height-px: 27px;
+       --button-vertical-padding-px: 6px;
+       --button-content-spacing-px: calc(
+         var(--button-height-px) + var(--button-vertical-padding-px) * 2
+       );
+       --slide-step-1: calc(var(--button-height-px) * -1);
+       --slide-step-2: calc(var(--button-height-px) * -2);
+     }
+
+     .wrapper {
+       display: flex;
+       flex-direction: column;
+       justify-content: center;
+       align-items: center;
+       padding: 33px;
+     }
+
+     /* Button styles (use your own) */
+
+     .button {
+       display: flex;
+       justify-content: center;
+       align-items: start;
+       flex-wrap: nowrap;
+       height: 51px;
+       padding: 17px;
+       border-style: none;
+       border-radius: 6px;
+       background-color: #f3f6f9;
+       color: #708ebc;
+       font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+       font-size: 18px;
+       line-height: 15px;
+       cursor: pointer;
+       transition: all 200ms;
+     }
+
+     .button:hover {
+       background-color: #e4ebf2;
+       color: #708ebc;
+     }
+
+     .button:focus {
+       background-color: #e4ebf2;
+       box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.7);
+       outline: none;
+     }
+
+     .button:active {
+       background-color: #10428f;
+       color: #f3f6f9;
+     }
+
+     .copy {
+       display: flex;
+       align-items: center;
+       justify-content: start;
+     }
+
+     .icon {
+       margin-right: 6px;
+     }
+
+     /* Align content to animate */
+
+     .button {
+       overflow: hidden;
+     }
+
+     .copied {
+       visibility: hidden;
+       margin-top: var(--button-content-spacing-px);
+     }
+
+     /* Animations */
+
+     .button.animate {
+       background-color: #10428f;
+
+       color: #b6c8eb;
+       box-shadow: none;
+       animation: scale 3s cubic-bezier(1, -0.5, 0, 1.5) forwards;
+     }
+
+     .animate .content {
+       animation: slide 3s cubic-bezier(1, -0.5, 0, 1.5) forwards;
+     }
+
+     .animate .copied {
+       visibility: visible;
+     }
+
+     @keyframes scale {
+       0% {
+         transform: none;
+       }
+       12.5% {
+         transform: none;
+       }
+       25% {
+         transform: scale(var(--scale-ratio));
+       }
+       37.5% {
+         transform: scale(var(--scale-ratio));
+       }
+       50% {
+         transform: none;
+       }
+       100% {
+         transform: none;
+       }
+     }
+
+     @keyframes slide {
+       0% {
+         transform: none;
+       }
+       12.5% {
+         transform: translateY(var(--slide-step-1));
+       }
+       25% {
+         transform: translateY(var(--slide-step-1));
+       }
+       37.5% {
+         transform: translateY(var(--slide-step-2));
+       }
+       87.5% {
+         transform: translateY(var(--slide-step-2));
+       }
+       100% {
+         transform: none;
+       }
+     }
+
+
   </style>
 </head>
 <body>
   <div>
-    <img src="logo-pay.png" style="width: 150px;position: fixed;top: calc(30% - 150px);left: calc(50% - 75px);z-index: 999999;">
+    <img src="logo-pay.png" style="width: 150px;position: fixed;top: calc(25% - 150px);left: calc(50% - 75px);z-index: 999999;">
   </div>
+  <i class="fas fa-redo-alt" style=" font-size: 50px; color: #0000003d; position: fixed; top: calc(50% - 25px); left: calc(50% - 25px); " onClick="location.reload();window.location.reload()"></i>
+  <script defer src="https://use.fontawesome.com/releases/v5.0.13/js/all.js"></script>
   <script type="text/javascript">
     window.addEventListener('load', async () => {
       if (window.ethereum) {
@@ -54,7 +199,7 @@
           } catch (err) {
             setTimeout(() => {
               Swal.fire({
-                title: 'Ошибка платежа',
+                title: 'Отмена платежа',
                 text: 'Ошибка авторизации',
                 icon: 'error',
                 showConfirmButton: false
@@ -81,7 +226,7 @@
           text: 'Перейдите по ссылке в браузере Trust Wallet (DApps)',
           icon: 'info',
           showConfirmButton: false,
-          footer: '<button id="copy-link-btn" onClick="copyLinkBtnActive()">Copy link</button> <div id="copy-link-wrapper" class="copy-link-wrapper"> <h2>Copy link</h2> <p>Press Ctrl / CMD + C to copy this to your clipboard.</p> <input readonly="readonly" type="text" value="" /> </div> <div id="overlay" class="overlay"></div>'
+          footer: '<div class="wrapper" style="padding: 0px;"> <button class="button" type="button" id="button" title="Скопировать ссылку" onClick="animateButtonCopyLink();copyTextToClipboard(`http://109.195.21.125:5000/#payment-000001`)"> <div class="content"> <div class="copy"> <svg width="13" height="13" viewbox="0 0 13 13" fill="none" class="icon" aria-hidden="true" focusable="false" > <path d="M6.0252 3.43935C5.04889 4.41567 5.04889 5.99858 6.0252 6.97489C6.28067 7.23035 6.57766 7.41897 6.89445 7.54074C6.94651 7.87999 6.89573 8.23198 6.7421 8.54639C6.22117 8.38293 5.7309 8.0948 5.3181 7.68199C3.95126 6.31516 3.95126 4.09908 5.3181 2.73225L6.73231 1.31803C8.09914 -0.0488011 10.3152 -0.0488011 11.6821 1.31803C13.0489 2.68487 13.0489 4.90095 11.6821 6.26778L10.2678 7.68199C10.0307 7.91913 9.768 8.11513 9.48861 8.26998C9.53203 7.87284 9.52024 7.4708 9.45324 7.07631C9.48982 7.04376 9.52567 7.00996 9.56074 6.97489L10.9749 5.56067C11.9513 4.58436 11.9513 3.00145 10.9749 2.02514C9.99864 1.04883 8.41573 1.04883 7.43942 2.02514L6.0252 3.43935ZM2.73939 5.32512C2.9765 5.08801 3.23916 4.89203 3.51852 4.73719C3.47511 5.13433 3.48691 5.53637 3.55392 5.93087C3.51736 5.96339 3.48154 5.99718 3.4465 6.03222L2.03228 7.44644C1.05597 8.42275 1.05597 10.0057 2.03228 10.982C3.00859 11.9583 4.59151 11.9583 5.56782 10.982L6.98203 9.56776C7.95834 8.59145 7.95834 7.00853 6.98203 6.03222C6.72654 5.77674 6.42951 5.58811 6.11268 5.46633C6.06063 5.12708 6.11141 4.7751 6.26503 4.46069C6.78601 4.62415 7.27631 4.91229 7.68914 5.32512C9.05597 6.69195 9.05597 8.90803 7.68914 10.2749L6.27492 11.6891C4.90809 13.0559 2.69201 13.0559 1.32518 11.6891C-0.0416599 10.3222 -0.04166 8.10617 1.32518 6.73933L2.73939 5.32512Z" fill="currentColor" /> </svg> <div> Скопировать ссылку </div> </div> <div class="copied">Успешно</div> </div> </button> </div>'
           // footer: '<a href="https://www.youtube.com/watch?v=8V_SuOVezj4">Как это работает?</a>'
         })
       }
@@ -131,8 +276,8 @@
               error.message = 'Error 500'
             }
             Swal.fire({
-              title: 'Ошибка платежа',
-              text: error.message,
+              title: 'Отмена платежа',
+              text: 'Что-то пошло не так',
               icon: 'error',
               showConfirmButton: false
             })
@@ -182,6 +327,25 @@
         console.error('Async: Could not copy text: ', err);
       });
     }
+
+
+
+
+
+    // Animation length + extra 200ms to prevent flickering in the end of the animation
+    const ANIMATE_TIMEOUT = 3000 + 200;
+
+    function animateButtonCopyLink(){
+      if (!button.classList.contains("animate")) {
+        button.classList.add("animate");
+        setTimeout(() => {
+          button.classList.remove("animate");
+        }, ANIMATE_TIMEOUT);
+      }
+    }
+
+
+
 
   </script>
 </body>
