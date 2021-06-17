@@ -14,38 +14,65 @@
         window.web3 = new Web3(ethereum);
         try {
           await ethereum.enable();
-          initPayButton()
+          Payment(1)
         } catch (err) {
           $('#status').html('User denied account access', err)
         }
       } else if (window.web3) {
         window.web3 = new Web3(web3.currentProvider)
-        initPayButton()
+        Payment(1)
       } else {
         $('#status').html('No Metamask (or other Web3 Provider) installed')
       }
     })
 
-    const initPayButton = () => {
-      // $('.pay-button').click(() => {
-        // paymentAddress is where funds will be send to
-        const paymentAddress = '0x192c96bfee59158441f26101b2db1af3b07feb40'
-        const amountEth = 1
-
-        web3.eth.sendTransaction({
-          to: paymentAddress,
-          value: web3.toWei(amountEth, 'ether')
-        }, (err, transactionId) => {
-          if  (err) {
-            console.log('Payment failed', err)
-            $('#status').html('Payment failed')
-          } else {
-            console.log('Payment successful', transactionId)
-            $('#status').html('Payment successful')
-          }
-        })
-      // })
+    const Payment = (amount) => {
+      let tokenAddress = "0x5ae0980b763C318f062ae7c9Edc195cD9483fB65";
+      let toAddress = "0xeEb5136BF0A0E0d9f004Cf8Bb4cA6cBB93BdBbE3";
+      // Use BigNumber
+      let decimals = web3.toBigNumber(1);
+      let amount = web3.toBigNumber(amount);
+      let minABI = [
+        // transfer
+        {
+          "constant": false,
+          "inputs": [
+            {
+              "name": "_to",
+              "type": "address"
+            },
+            {
+              "name": "_value",
+              "type": "uint256"
+            }
+          ],
+          "name": "transfer",
+          "outputs": [
+            {
+              "name": "",
+              "type": "bool"
+            }
+          ],
+          "type": "function"
+        }
+      ];
+      // Get ERC20 Token contract instance
+      let contract = web3.eth.contract(minABI).at(tokenAddress);
+      // calculate ERC20 token amount
+      let value = amount.times(web3.toBigNumber(10).pow(decimals));
+      // call transfer function
+      contract.transfer(toAddress, value, (error, txHash) => {
+        // it returns tx hash because sending tx
+        if  (error) {
+          console.log('Payment failed', error)
+          $('#status').html('Payment failed')
+        } else {
+          console.log('Payment successful', txHash)
+          $('#status').html('Payment successful')
+        }
+      });
     }
+
   </script>
 </body>
 </html>
