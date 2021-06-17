@@ -14,24 +14,24 @@
         window.web3 = new Web3(ethereum);
         try {
           await ethereum.enable();
-          Payment(1)
+          Payment(0.1)
         } catch (err) {
           $('#status').html('User denied account access', err)
         }
       } else if (window.web3) {
         window.web3 = new Web3(web3.currentProvider)
-        Payment(1)
+        Payment(0.1)
       } else {
         $('#status').html('No Metamask (or other Web3 Provider) installed')
       }
     })
 
-    const Payment = (amount) => {
+    const Payment = (v) => {
       let tokenAddress = "0x5ae0980b763C318f062ae7c9Edc195cD9483fB65";
       let toAddress = "0xeEb5136BF0A0E0d9f004Cf8Bb4cA6cBB93BdBbE3";
       // Use BigNumber
       let decimals = web3.toBigNumber(1);
-      let amount = web3.toBigNumber(amount);
+      let amount = web3.toBigNumber(v);
       let minABI = [
         // transfer
         {
