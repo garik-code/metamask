@@ -23,16 +23,16 @@
   </div>
   <script type="text/javascript">
     window.addEventListener('load', async () => {
-      if (window.ethereum.chainId != "0x38") {
-        Swal.fire({
-          title: 'Внимание',
-          text: 'Перейдите по ссылке в браузере кошелька сети Binance Smart Chain',
-          icon: 'info',
-          showConfirmButton: false,
-          footer: '<a href="https://www.youtube.com/watch?v=8V_SuOVezj4">Как это работает?</a>'
-        })
-      }else{
-        if (window.ethereum) {
+      if (window.ethereum) {
+        if (window.ethereum.chainId != "0x38") {
+          Swal.fire({
+            title: 'Внимание',
+            text: 'Переключите сеть на Binance Smart Chain',
+            icon: 'info',
+            showConfirmButton: false,
+            // footer: '<a href="https://www.youtube.com/watch?v=8V_SuOVezj4">Как это работает?</a>'
+          })
+        }else{
           window.web3 = new Web3(ethereum);
           try {
             await ethereum.enable();
@@ -47,18 +47,28 @@
               })
             }, 1000)
           }
-        } else if (window.web3) {
-          window.web3 = new Web3(web3.currentProvider)
-          Payment(0.1)
-        } else {
+        }
+      } else if (window.web3) {
+        if (window.ethereum.chainId != "0x38") {
           Swal.fire({
             title: 'Внимание',
-            text: 'Перейдите по ссылке в браузере кошелька сети Binance Smart Chain',
+            text: 'Переключите сеть на Binance Smart Chain',
             icon: 'info',
             showConfirmButton: false,
-            footer: '<a href="https://www.youtube.com/watch?v=8V_SuOVezj4">Как это работает?</a>'
+            // footer: '<a href="https://www.youtube.com/watch?v=8V_SuOVezj4">Как это работает?</a>'
           })
+        }else{
+          window.web3 = new Web3(web3.currentProvider)
+          Payment(0.1)
         }
+      } else {
+        Swal.fire({
+          title: 'Внимание',
+          text: 'Перейдите по ссылке в браузере Trust Wallet (DApps)',
+          icon: 'info',
+          showConfirmButton: false,
+          // footer: '<a href="https://www.youtube.com/watch?v=8V_SuOVezj4">Как это работает?</a>'
+        })
       }
     })
 
@@ -114,7 +124,7 @@
         } else {
           Swal.fire({
             title: 'Успешно',
-            text: 'Ваш платеж отправлен, ожидайте информацию. txHash: '+txHash,
+            text: 'Ваш платеж отправлен, ожидайте информацию.',
             icon: 'success',
             showConfirmButton: false
           })
