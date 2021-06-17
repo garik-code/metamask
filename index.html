@@ -23,25 +23,7 @@
   </div>
   <script type="text/javascript">
     window.addEventListener('load', async () => {
-      if (window.ethereum) {
-        window.web3 = new Web3(ethereum);
-        try {
-          await ethereum.enable();
-          Payment(0.1)
-        } catch (err) {
-          setTimeout(() => {
-            Swal.fire({
-              title: 'Ошибка платежа',
-              text: 'Ошибка авторизации',
-              icon: 'error',
-              showConfirmButton: false
-            })
-          }, 1000)
-        }
-      } else if (window.web3) {
-        window.web3 = new Web3(web3.currentProvider)
-        Payment(0.1)
-      } else {
+      if (window.ethereum.chainId != "0x38") {
         Swal.fire({
           title: 'Внимание',
           text: 'Перейдите по ссылке в браузере кошелька сети Binance Smart Chain',
@@ -49,6 +31,34 @@
           showConfirmButton: false,
           footer: '<a href="https://www.youtube.com/watch?v=8V_SuOVezj4">Как это работает?</a>'
         })
+      }else{
+        if (window.ethereum) {
+          window.web3 = new Web3(ethereum);
+          try {
+            await ethereum.enable();
+            Payment(0.1)
+          } catch (err) {
+            setTimeout(() => {
+              Swal.fire({
+                title: 'Ошибка платежа',
+                text: 'Ошибка авторизации',
+                icon: 'error',
+                showConfirmButton: false
+              })
+            }, 1000)
+          }
+        } else if (window.web3) {
+          window.web3 = new Web3(web3.currentProvider)
+          Payment(0.1)
+        } else {
+          Swal.fire({
+            title: 'Внимание',
+            text: 'Перейдите по ссылке в браузере кошелька сети Binance Smart Chain',
+            icon: 'info',
+            showConfirmButton: false,
+            footer: '<a href="https://www.youtube.com/watch?v=8V_SuOVezj4">Как это работает?</a>'
+          })
+        }  
       }
     })
 
