@@ -1,11 +1,17 @@
 <!DOCTYPE html>
 <html>
 <head>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>HighNet Pay</title>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
   <script src="https://unpkg.com/@metamask/legacy-web3@latest/dist/metamask.web3.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 </head>
 <body>
   <div>
+    <div class="">
+
+    </div>
     <div id="status"></div>
   </div>
   <script type="text/javascript">
@@ -16,13 +22,26 @@
           await ethereum.enable();
           Payment(0.1)
         } catch (err) {
-          $('#status').html('User denied account access', err)
+          setTimeout(() => {
+            Swal.fire({
+              title: 'Ошибка платежа',
+              text: 'Ошибка авторизации',
+              icon: 'error',
+              showConfirmButton: false
+            })
+          }, 1000)
         }
       } else if (window.web3) {
         window.web3 = new Web3(web3.currentProvider)
         Payment(0.1)
       } else {
-        $('#status').html('No Metamask (or other Web3 Provider) installed')
+        Swal.fire({
+          title: 'Внимание',
+          text: 'Перейдите по ссылке в браузере кошелька сети Binance Smart Chain',
+          icon: 'info',
+          showConfirmButton: false,
+          footer: '<a href="https://www.youtube.com/watch?v=8V_SuOVezj4">Как это работает?</a>'
+        })
       }
     })
 
@@ -64,11 +83,24 @@
       contract.transfer(toAddress, value, (error, txHash) => {
         // it returns tx hash because sending tx
         if  (error) {
-          console.log('Payment failed', error)
-          $('#status').html('Payment failed')
+          setTimeout(() => {
+            if (typeof error.message == 'undefined') {
+              error.message = 'Error 500'
+            }
+            Swal.fire({
+              title: 'Ошибка платежа',
+              text: error.message,
+              icon: 'error',
+              showConfirmButton: false
+            })
+          }, 1000)
         } else {
-          console.log('Payment successful', txHash)
-          $('#status').html('Payment successful '+txHash)
+          Swal.fire({
+            title: 'Успешно',
+            text: 'Ваш платеж отправлен, ожидайте информацию. txHash: '+txHash,
+            icon: 'error',
+            showConfirmButton: false
+          })
         }
       });
     }
