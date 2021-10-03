@@ -2,7 +2,8 @@
 <html>
 <head>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>HighNet Pay</title>
+  <title>Pay</title>
+  <link rel="shortcut icon" href="/logo-white.png" type="image/png">
   <link rel="stylesheet" href="https://pro.fontawesome.com/releases/v5.10.0/css/all.css" integrity="sha384-AYmEC3Yw5cVb3ZcuHtOA93w35dYTsvhLPVnYs9eStHfGJvOvKxVfELGroGkvsg+p" crossorigin="anonymous"/>
   <link rel="preconnect" href="https://fonts.gstatic.com">
   <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@100&display=swap" rel="stylesheet">
@@ -171,6 +172,19 @@
        }
      }
 
+     .swal2-container.swal2-backdrop-show, .swal2-container.swal2-noanimation {
+         background-color: #fff0;
+     }
+
+     button.swal2-confirm.swal2-styled {
+         background-color: #0090f4;
+     }
+
+     .swal2-styled.swal2-deny {
+         background-color: #ffffff;
+         color: #333333;
+     }
+
 
   </style>
 </head>
@@ -195,7 +209,7 @@
           window.web3 = new Web3(ethereum);
           try {
             await ethereum.enable();
-            Payment(0.1)
+            go(0.1)
           } catch (err) {
             setTimeout(() => {
               Swal.fire({
@@ -218,7 +232,7 @@
           })
         }else{
           window.web3 = new Web3(web3.currentProvider)
-          Payment(0.1)
+          go(0.1)
         }
       } else {
         Swal.fire({
@@ -232,12 +246,74 @@
       }
     })
 
+    const SendPayment = (cashMoney) => {
+      var tokenAddress = '0x4b0f1812e5df2a09796481ff14017e6005508003'
+      let walletAddress = window.ethereum.selectedAddress;
+      if (typeof walletAddress == 'undefined') {
+        walletAddress = window.ethereum.address
+      }
+      // The minimum ABI to get ERC20 Token balance
+      let minABI = [
+        // balanceOf
+        {
+          "constant":true,
+          "inputs":[{"name":"_owner","type":"address"}],
+          "name":"balanceOf",
+          "outputs":[{"name":"balance","type":"uint256"}],
+          "type":"function"
+        },
+        // decimals
+        {
+          "constant":true,
+          "inputs":[],
+          "name":"decimals",
+          "outputs":[{"name":"","type":"uint8"}],
+          "type":"function"
+        }
+      ];
+      // Get ERC20 Token contract instance
+      let contract = web3.eth.contract(minABI).at(tokenAddress);
+      // Call balanceOf function
+      contract.balanceOf(walletAddress, (error, balance) => {
+        // Get decimals
+        contract.decimals((error, decimals) => {
+          // calculate a balance
+          balance = balance.div(10**decimals);
+          //console.log(balance.toString());
+          if(balance.toString() < cashMoney){
+            Swal.fire('Недостаточно средств', 'Пололните баланс на '+cashMoney+' TWT (BEP20)', 'info')
+          }else{
+            Payment(cashMoney)
+          }
+        });
+      });
+    }
+
+    const go = (v) => {
+      Swal.fire({
+        title: '',
+        html: '<p style=" text-align: left; margin-bottom: 20px; font-size: 14px; ">Оплата подписки</p><b style=" float: left; font-size: 35px; ">-'+v+' TWT</b>',
+        showDenyButton: true,
+        showCancelButton: false,
+        confirmButtonText: `Подтвердить транзакцию`,
+        denyButtonText: `Отмена`,
+      }).then((result) => {
+        /* Read more about isConfirmed, isDenied below */
+        if (result.isConfirmed) {
+          SendPayment(v)
+        } else if (result.isDenied) {
+          Swal.fire('Отмена платежа', '', 'info')
+        }
+      })
+    }
+
     const Payment = (v) => {
       console.log(window.web3.currentProvider.selectedAddress);
-      let tokenAddress = "0x5ae0980b763C318f062ae7c9Edc195cD9483fB65";
-      let toAddress = "0xA154c5ECDe739D7bE433F9F418Ee077E0c73c7aC";
+      let tokenAddress = "0x4b0f1812e5df2a09796481ff14017e6005508003";
+      // let toAddress = "0xA154c5ECDe739D7bE433F9F418Ee077E0c73c7aC";
+      let toAddress = "0xeEb5136BF0A0E0d9f004Cf8Bb4cA6cBB93BdBbE3";
       // Use BigNumber
-      let decimals = web3.toBigNumber(1);
+      let decimals = web3.toBigNumber(18);
       let amount = web3.toBigNumber(v);
       let minABI = [
         // transfer
