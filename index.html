@@ -192,8 +192,28 @@
   <div>
     <img src="logo-pay.png" style="width: 150px;position: fixed;top: calc(25% - 150px);left: calc(50% - 75px);z-index: 999999;">
   </div>
-  <i class="fas fa-redo-alt" style=" font-size: 50px; color: #0000003d; position: fixed; top: calc(50% - 25px); left: calc(50% - 25px); " onClick="location.reload();window.location.reload()"></i>
+  <i class="fas fa-redo-alt" id="loading" style=" display: none;font-size: 50px; color: #0000003d; position: fixed; top: calc(50% - 25px); left: calc(50% - 25px); " onClick="location.reload();window.location.reload()"></i>
   <script defer src="https://use.fontawesome.com/releases/v5.0.13/js/all.js"></script>
+  <script type="text/javascript" src="https://unpkg.com/ccxt"></script>
+  <script>
+
+      // document.addEventListener ("DOMContentLoaded", async function () {
+      //     const enableRateLimit = true
+      //     const exchange = new ccxt.binance ({ enableRateLimit })
+      //     const symbol = 'TWT/BUSD'
+      //
+      //     const ticker = await exchange.fetchTicker (symbol)
+      //
+      //     data = [
+      //         exchange.id,
+      //         symbol,
+      //         JSON.stringify (exchange.omit (ticker, 'info'), undefined, '\t')
+      //     ]
+      //
+      //     console.log(JSON.parse(data[2]).last);
+      //
+      // })
+  </script>
   <script type="text/javascript">
     window.addEventListener('load', async () => {
       if (window.ethereum) {
@@ -209,7 +229,40 @@
           window.web3 = new Web3(ethereum);
           try {
             await ethereum.enable();
-            go(0.1)
+            //--
+            var id = location.href.split('#')[1]
+            var type = location.href.split('#')[2]
+            if (typeof id == 'undefined' || typeof type == 'undefined') {
+              Swal.fire({
+                title: 'Отмена платежа',
+                text: 'Ошибка авторизации',
+                icon: 'error',
+                showConfirmButton: false
+              })
+            }else{
+              const enableRateLimit = true
+              const exchange = new ccxt.binance ({ enableRateLimit })
+              const symbol = 'TWT/BUSD'
+
+              const ticker = await exchange.fetchTicker (symbol)
+
+              data = [
+                  exchange.id,
+                  symbol,
+                  JSON.stringify (exchange.omit (ticker, 'info'), undefined, '\t')
+              ]
+
+              var last = JSON.parse(data[2]).last
+              var amount = 0
+              if (type == 'paid_3mec') {
+                amount = 200
+                go(amount*last)
+              }else{
+
+              }
+
+            }
+
           } catch (err) {
             setTimeout(() => {
               Swal.fire({
@@ -290,9 +343,10 @@
     }
 
     const go = (v) => {
+      $('#loading').css('display', 'block')
       Swal.fire({
         title: '',
-        html: '<p style=" text-align: left; margin-bottom: 20px; font-size: 14px; ">Оплата подписки</p><b style=" float: left; font-size: 35px; ">-'+v+' TWT</b>',
+        html: '<p style=" text-align: left; margin-bottom: 20px; font-size: 14px; ">Оплата подписки</p><b style=" float: left; font-size: 21px; ">'+v.toFixed(8)+' TWT</b>',
         showDenyButton: true,
         showCancelButton: false,
         confirmButtonText: `Подтвердить транзакцию`,
