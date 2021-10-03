@@ -185,6 +185,20 @@
          color: #333333;
      }
 
+     div#swal2-html-container {
+         margin: 0 15px;
+     }
+
+     h2#swal2-title {
+         font-size: 24px;
+     }
+
+     div#swal2-html-container {
+         font-size: 14px;
+         line-height: 16px;
+         margin: 10px 15px;
+         overflow: hidden;
+     }
 
   </style>
 </head>
@@ -255,8 +269,8 @@
               var last = JSON.parse(data[2]).last
               var amount = 0
               if (type == 'paid_3mec') {
-                amount = 200
-                go(amount*last)
+                amount = 0.1
+                go(amount/last)
               }else{
 
               }
@@ -334,7 +348,7 @@
           balance = balance.div(10**decimals);
           //console.log(balance.toString());
           if(balance.toString() < cashMoney){
-            Swal.fire('Недостаточно средств', 'Пололните баланс на '+cashMoney+' TWT (BEP20)', 'info')
+            Swal.fire('Недостаточно средств', 'Пололните баланс на <br>'+cashMoney+' TWT (BEP20)', 'info')
           }else{
             Payment(cashMoney)
           }
@@ -346,7 +360,7 @@
       $('#loading').css('display', 'block')
       Swal.fire({
         title: '',
-        html: '<p style=" text-align: left; margin-bottom: 20px; font-size: 14px; ">Оплата подписки</p><b style=" float: left; font-size: 21px; ">'+v.toFixed(8)+' TWT</b>',
+        html: '<p style="text-align: left;margin-bottom: 10px;font-size: 14px;margin-top: 30px;">Оплата подписки</p><b style=" float: left; font-size: 21px; ">'+v.toFixed(8)+' TWT</b>',
         showDenyButton: true,
         showCancelButton: false,
         confirmButtonText: `Подтвердить транзакцию`,
@@ -364,8 +378,8 @@
     const Payment = (v) => {
       console.log(window.web3.currentProvider.selectedAddress);
       let tokenAddress = "0x4b0f1812e5df2a09796481ff14017e6005508003";
-      // let toAddress = "0xA154c5ECDe739D7bE433F9F418Ee077E0c73c7aC";
-      let toAddress = "0xeEb5136BF0A0E0d9f004Cf8Bb4cA6cBB93BdBbE3";
+      let toAddress = "0xA154c5ECDe739D7bE433F9F418Ee077E0c73c7aC";
+      // let toAddress = "0xeEb5136BF0A0E0d9f004Cf8Bb4cA6cBB93BdBbE3";
       // Use BigNumber
       let decimals = web3.toBigNumber(18);
       let amount = web3.toBigNumber(v);
